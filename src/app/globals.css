@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background-app: #f5f0e8;
+  --color-primary: #4CAF50;
+}
+
+@layer base {
+  body {
+    @apply font-sans antialiased bg-white dark:bg-[#171717] transition-colors;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined";
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+  font-size: 24px;
+}
+
+.glass-morphism {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.vip-glass {
+  background: linear-gradient(
+    135deg,
+    rgba(153, 176, 160, 0.9) 0%,
+    rgba(212, 219, 209, 0.8) 100%
+  );
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.glass-effect {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.active-selection {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1.5px solid #8e9775;
+  box-shadow: 0 4px 20px rgba(142, 151, 117, 0.15);
+}

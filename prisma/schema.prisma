@@ -1,0 +1,100 @@
+// 宠相随 (PetLink) Prisma Schema
+// 与 PRD §9.1、cursorrules、src/lib/constants.ts 对齐
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============ 枚举（与 constants.ts 四类及 PRD 一致） ============
+
+/// 记录大类：生活基础 / 医疗干预 / 体征监测 / 异常存证
+enum RecordCategory {
+  daily    // 生活基础
+  medical  // 医疗干预
+  vitals   // 体征监测
+  anomaly  // 异常存证
+}
+
+/// 宠物物种：猫 / 狗
+enum PetSpecies {
+  cat
+  dog
+}
+
+// ============ 模型 ============
+
+/// 用户（含 isPremium 用于订阅校验，cursorrules SaaS 架构师）
+model User {
+  id          String   @id @default(cuid())
+  name        String?
+  email       String?  @unique
+  phone       String?  // 电话号
+  avatarUrl   String?
+  petParentId String?  // 如 "8829"，个人中心展示
+  isPremium   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  pets          Pet[]
+  conversations Conversation[]
+}
+
+/// 宠物（多宠物管理，PRD 5.1.1 卡片：头像、昵称、品种、年龄、体重、BCS）
+model Pet {
+  id        String     @id @default(cuid())
+  name      String
+  species   PetSpecies
+  breed     String?    // 品种，如「金毛寻回犬」「英国短毛猫」
+  birthDate DateTime?
+  age       String?    // 展示用，如 "2岁"
+  weight    String?    // 如 "28.4 kg"
+  bcs       Int?       // 1–9 体况评分
+  avatarUrl String?
+  ownerId   String
+  owner     User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  records       Record[]
+  conversations Conversation[]
+}
+
+/// 记录表（PRD §9.1：Record_ID、Pet_ID、Date_Time、Category、Tag_IDs、Text_Note、Media_URLs）
+/// 多模态：textNote 文本，mediaUrls 图/视频 URL 数组，支持 OSS 或本地 /uploads
+/// cursorrules：JSONB 存四类标签，PetID+DateTime 复合索引（日历高频查询）
+model Record {
+  id        String         @id @default(cuid())
+  petId     String
+  pet       Pet            @relation(fields: [petId], references: [id], onDelete: Cascade)
+  dateTime  DateTime
+  category  RecordCategory
+  tagIds    Json           // 标签数组，与 src/lib/record-tags.ts 的 TAGS_BY_CATEGORY 对应
+  textNote  String?
+  mediaUrls Json?          // 多模态：图/视频 URL 数组 ["/uploads/records/xxx.jpg", ...]
+  bcsScore  Int?           // 体征类可存 BCS 评分（由体重 Tab 同步）
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  @@index([petId, dateTime])
+}
+
+/// AI 问诊对话（长记忆）：每宠一会话，存储多轮消息供 consultAI 上下文
+model Conversation {
+  id        String   @id @default(cuid())
+  petId     String
+  pet       Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages  Json     // [{ role, content, analysis?, homeCare?, redFlags? }]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([petId, userId])
+  @@index([userId])
+}

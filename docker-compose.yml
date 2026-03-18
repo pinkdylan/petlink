@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: petlink-postgres
+    environment:
+      POSTGRES_USER: petlink
+      POSTGRES_PASSWORD: petlink123
+      POSTGRES_DB: petlink
+    ports:
+      - "5432:5432"
+    volumes:
+      - petlink_pgdata:/var/lib/postgresql/data
+
+volumes:
+  petlink_pgdata:
