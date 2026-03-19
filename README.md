@@ -16,7 +16,6 @@
 - **BCS 视觉体重检测算法训练中**：当前正在进行 BCS 相关视觉与体重检测算法训练，目标是把“拍照评估体况/体重”的流程做成更稳定、更省事的体验。
 - **PWA 体验**：支持离线缓存与“添加到主屏幕”，让移动端像原生应用一样顺手。
 - <img width="585" height="1266" alt="9add52b8e9a6063d6e2251a08089ff0b" src="https://github.com/user-attachments/assets/c3fcdde3-ec4d-41bf-bb95-a532b960d6ec" />
-<img width="585" height="1266" alt="9add52b8e9a6063d6e2251a08089ff0b" src="https://github.com/user-attachments/assets/c3fcdde3-ec4d-41bf-bb95-a532b960d6ec" />
 
 <img width="585" height="1266" alt="6f1dfe583d2726987fbc1f1af3bd32a5" src="https://github.com/user-attachments/assets/d671a7f9-43cc-4bd9-86d4-979defa389ee" />
 <img width="585" height="1266" alt="6f1dfe583d2726987fbc1f1af3bd32a5" src="https://github.com/user-attachments/assets/d671a7f9-43cc-4bd9-86d4-979defa389ee" />
