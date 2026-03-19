@@ -66,3 +66,116 @@ src/
 ## 规范
 
 - 与 `petlink.cursorrules` 一致：类型从 Prisma 生成，共享逻辑放 `@/lib` 或 `@/hooks`，校验用 Zod。
+
+---
+
+## 快速开始（本地）
+
+### 1. 安装依赖
+
+```bash
+pnpm install
+```
+
+### 2. 环境变量
+
+复制 `.env.example` 为 `.env.local`，并填入：
+
+- `DATABASE_URL`（本地 Postgres 或你的云数据库连接串）
+- `AI_API_KEY`
+- `AI_BASE_URL`
+- `AI_MODEL`（可选）
+
+> 说明：不要把 `.env.local` 提交到 Git。
+
+### 3. 启动开发服务器
+
+```bash
+pnpm dev
+```
+
+默认访问 `http://localhost:3000`。
+
+### 4. 数据库迁移与种子数据（Prisma）
+
+若首次连接数据库，通常需要：
+
+```bash
+pnpm exec prisma migrate dev
+pnpm db:seed
+```
+
+---
+
+## 数据库在哪里、表结构怎么改？
+
+本项目使用云端 PostgreSQL（Neon / Supabase）或本地 Docker Postgres。
+
+- 表结构定义：`/prisma/schema.prisma`
+- 迁移历史：`/prisma/migrations/`
+- 演示数据：`/prisma/seed.ts`
+
+数据库连接由 `src/lib/prisma.ts` 统一管理（Prisma Client 单例）。
+
+---
+
+## 数据可视化（像 DataGrip / pgAdmin 那样）
+
+你可以用两种方式管理数据：
+
+1. **Neon / Supabase 自带的 Web 工具**
+   - Neon：通常有 SQL Editor / 表结构与数据查看界面
+   - Supabase：可用 Table Editor 或 SQL Editor
+2. **Prisma Studio（更“所见即所得”）**
+
+在本地运行：
+
+```bash
+pnpm exec prisma studio
+```
+
+浏览器打开 Prisma Studio 后即可查看/筛选数据（能力取决于 Prisma Studio 的当前版本与模型类型）。
+
+> 如果你希望用 SQL 做增删查改：直接在 Neon/Supabase 的 SQL Editor 中执行 `INSERT/UPDATE/DELETE/SELECT` 即可。
+
+---
+
+## 部署到 Vercel（指引）
+
+Vercel 环境变量必须配置以下键（Key 大小写要一致）：
+
+- `DATABASE_URL`
+- `AI_API_KEY`
+- `AI_BASE_URL`
+- `AI_MODEL`（可选）
+
+详细步骤见仓库根目录 `DEPLOYMENT.md`。
+
+---
+
+## PWA 相关（离线缓存与“添加到主屏幕”）
+
+- Manifest：`src/app/manifest.ts`
+- Service Worker：`public/sw.js`
+- 注册逻辑：`src/components/pwa/ServiceWorkerRegister.tsx`
+- 安装引导：`src/components/pwa/PWAInstallPrompt.tsx`
+- 侧滑返回：`src/components/pwa/SwipeBackHandler.tsx`
+
+---
+
+## iOS Safari 兼容小贴士（排查白屏/卡住）
+如果出现「进度条卡住」「Safari 提示服务器无响应」但桌面浏览器正常：
+- 先在 iPad/iPhone 上清除 Safari 网站数据（设置 → Safari → 清除历史记录与网站数据）
+- 如果你装过「添加到主屏幕」的 PWA，建议先从主屏幕删除该应用图标，再用 Safari 重新打开网址
+
+---
+
+## 数据模型速览（Prisma）
+主要表结构定义在 `prisma/schema.prisma`，当前包含：
+- `User`：用户（含 `isPremium`）
+- `Pet`：宠物
+- `Record`：记录（`category` 四类：daily/medical/vitals/anomaly；多模态 `mediaUrls`；标签数组 `tagIds`）
+- `Conversation`：AI 长记忆问诊对话（按 `petId + userId` 唯一）
+
+---
+
